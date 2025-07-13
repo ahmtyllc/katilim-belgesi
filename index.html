@@ -2,57 +2,52 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Katılım Belgesi Oluştur</title>
-  <style>
-    body {
-      text-align: center;
-      font-family: Arial, sans-serif;
-    }
-    #canvas {
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Katılım Belgesi Oluştur</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
 </head>
 <body>
-  <h2>Katılım Belgesi Oluştur</h2>
-  <input type="text" id="nameInput" placeholder="Ad Soyadınızı girin" />
-  <br><br>
-  <button onclick="generateCertificate()">Belgeyi Oluştur</button>
+    <h1>Katılım Belgesi Oluştur</h1>
+    <input type="text" id="fullname" placeholder="Ad Soyadınızı girin">
+    <button onclick="generateCertificate()">Belgeyi Oluştur</button>
+    <canvas id="certificateCanvas" width="1087" height="768"></canvas>
+    <script>
+        function generateCertificate() {
+            const name = document.getElementById("fullname").value;
+            if (!name.trim()) return alert("Lütfen adınızı ve soyadınızı girin.");
 
-  <canvas id="canvas" width="1920" height="1080"></canvas>
-  <br><br>
-  <a id="downloadLink" style="display:none;" download="katilim-belgesi.png">İndir</a>
-
-  <script>
-    function generateCertificate() {
-      const name = document.getElementById("nameInput").value;
-      if (!name) {
-        alert("Lütfen ad soyad girin.");
-        return;
-      }
-
-      const canvas = document.getElementById("canvas");
-      const ctx = canvas.getContext("2d");
-
-      const image = new Image();
-      image.src = "katilim-belgesi.jpg"; // Bu dosya depo içinde olmalı
-      image.onload = function () {
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-        ctx.font = "bold 60px Arial";
-        ctx.fillStyle = "white";
-        ctx.textAlign = "right";
-        ctx.fillText(name, canvas.width - 100, 200); // Ad soyad sağ üstte
-
-        const dataURL = canvas.toDataURL("image/png");
-
-        const link = document.getElementById("downloadLink");
-        link.href = dataURL;
-        link.style.display = "inline";
-        link.innerText = "Belgeyi İndir";
-      };
-    }
-  </script>
+            const canvas = document.getElementById("certificateCanvas");
+            const ctx = canvas.getContext("2d");
+            const img = new Image();
+            img.src = "certificate.jpg";
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                ctx.font = "bold 30px Arial";
+                ctx.fillStyle = "#e60000";
+                ctx.textAlign = "center";
+                ctx.fillText(name, canvas.width / 2, 290);
+            };
+        }
+    </script>
 </body>
 </html>
