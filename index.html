@@ -3,43 +3,69 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Katılım Belgesi</title>
+  <title>Katılım Belgesi Oluştur</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background: url('katilim-belgesi.jpg') no-repeat center center fixed;
-      background-size: cover;
       font-family: Arial, sans-serif;
-    }
-    .certificate-container {
-      width: 100%;
-      height: 100vh;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .name-overlay {
-      position: absolute;
-      top: 43%; /* Adjusted to be between the title and dots */
-      font-size: 2.8em;
-      font-weight: bold;
-      color: red;
       text-align: center;
-      width: 100%;
+      background-color: #f4f4f4;
+    }
+    #canvas {
+      display: none;
+    }
+    .container {
+      margin-top: 50px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="certificate-container">
-    <div class="name-overlay" id="nameField">Ad Soyad</div>
+  <div class="container">
+    <h2>Katılım Belgesi Oluştur</h2>
+    <p>Ad Soyad giriniz:</p>
+    <input type="text" id="fullname" placeholder="Ad Soyad">
+    <button onclick="generate()">Belgeyi Oluştur</button>
+    <br><br>
+    <a id="downloadLink" style="display: none;">⬇️ Belgeyi İndir</a>
   </div>
+  <canvas id="canvas" width="1087" height="768"></canvas>
+
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const name = urlParams.get('name');
-    if (name) {
-      document.getElementById('nameField').textContent = name;
+    function generate() {
+      const name = document.getElementById("fullname").value.trim();
+      if (!name) {
+        alert("Lütfen ad soyad giriniz.");
+        return;
+      }
+
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+      image.src = "katilim-belgesi.jpg";
+
+      image.onload = function () {
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        ctx.font = "bold 36px Arial";
+        ctx.fillStyle = "red";
+        ctx.textAlign = "center";
+        ctx.fillText(name, canvas.width / 2, 360);
+
+        const link = document.getElementById("downloadLink");
+        link.href = canvas.toDataURL("image/png");
+        link.download = `${name}-katilim-belgesi.png`;
+        link.textContent = "⬇️ Belgeyi İndir";
+        link.style.display = "inline";
+      };
     }
   </script>
 </body>
