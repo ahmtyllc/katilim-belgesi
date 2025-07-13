@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Katılım Belgesi Oluştur</title>
+  <script src="https://unpkg.com/pdf-lib"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
+    input { padding: 10px; font-size: 18px; width: 300px; }
+    button { padding: 10px 20px; font-size: 18px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Katılım Belgesi Oluştur</h1>
+  <input type="text" id="fullName" placeholder="Ad Soyadınızı girin" />
+  <br />
+  <button onclick="createCertificate()">Belgeyi Oluştur</button>
+
+  <script>
+    async function createCertificate() {
+      const name = document.getElementById("fullName").value.trim();
+      if (!name) {
+        alert("Lütfen ad soyad giriniz.");
+        return;
+      }
+
+      const existingPdfBytes = await fetch("katilim-sablon.pdf").then(res => res.arrayBuffer());
+      const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+      const pages = pdfDoc.getPages();
+      const firstPage = pages[0];
+
+      const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+      firstPage.drawText(name, {
+        x: 560,
+        y: 500,
+        size: 24,
+        font: helveticaFont,
+        color: PDFLib.rgb(0, 0, 0)
+      });
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = name + "-katilim-belgesi.pdf";
+      link.click();
+    }
+  </script>
+</body>
+</html>
