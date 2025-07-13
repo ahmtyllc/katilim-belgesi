@@ -2,51 +2,56 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Katılım Belgesi Oluştur</title>
-  <script src="https://unpkg.com/pdf-lib"></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
-    input { padding: 10px; font-size: 18px; width: 300px; }
-    button { padding: 10px 20px; font-size: 18px; margin-top: 20px; }
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    #canvas {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <h1>Katılım Belgesi Oluştur</h1>
-  <input type="text" id="fullName" placeholder="Ad Soyadınızı girin" />
-  <br />
-  <button onclick="createCertificate()">Belgeyi Oluştur</button>
+  <h2>Katılım Belgesi Oluştur</h2>
+  <input type="text" id="nameInput" placeholder="Ad Soyadınızı girin" />
+  <br><br>
+  <button onclick="generateCertificate()">Belgeyi Oluştur</button>
+
+  <canvas id="canvas" width="1920" height="1080"></canvas>
+  <br><br>
+  <a id="downloadLink" style="display:none;" download="katilim-belgesi.png">İndir</a>
 
   <script>
-    async function createCertificate() {
-      const name = document.getElementById("fullName").value.trim();
+    function generateCertificate() {
+      const name = document.getElementById("nameInput").value;
       if (!name) {
-        alert("Lütfen ad soyad giriniz.");
+        alert("Lütfen ad soyad girin.");
         return;
       }
 
-      const existingPdfBytes = await fetch("katilim-sablon.pdf").then(res => res.arrayBuffer());
-      const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-      const pages = pdfDoc.getPages();
-      const firstPage = pages[0];
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
 
-      const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-      firstPage.drawText(name, {
-        x: 560,
-        y: 500,
-        size: 24,
-        font: helveticaFont,
-        color: PDFLib.rgb(0, 0, 0)
-      });
+      const image = new Image();
+      image.src = "katilim-belgesi.jpg"; // Bu dosya depo içinde olmalı
+      image.onload = function () {
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
+        ctx.font = "bold 60px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "right";
+        ctx.fillText(name, canvas.width - 100, 200); // Ad soyad sağ üstte
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = name + "-katilim-belgesi.pdf";
-      link.click();
+        const dataURL = canvas.toDataURL("image/png");
+
+        const link = document.getElementById("downloadLink");
+        link.href = dataURL;
+        link.style.display = "inline";
+        link.innerText = "Belgeyi İndir";
+      };
     }
   </script>
 </body>
